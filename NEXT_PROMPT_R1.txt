@@ -1,1 +1,1 @@
-知识库三个硬需求没落地：评论模块整个没做，列表里只渲染静态数；IndexedDB 离线缓存是 0 引用，idb 包声明了但代码里没 openDB 调用，离线一片空白；编辑锁接了 API 但 onDestroy 里 if (lockInfo) {} 是空 body，releaseLock 从没调过。检查修复一下。
+有几个问题：评论模块整个没做，列表里只渲染了静态数据；编辑锁接了 API 但 onDestroy 里 if (lockInfo) {} 是空 body，releaseLock 从没调过。检查修复一下。

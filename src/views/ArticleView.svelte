@@ -2,6 +2,7 @@
   import { onMount } from 'svelte'
   import { mockArticles, mockVersions } from '../mock'
   import MarkdownPreview from '../components/MarkdownPreview.svelte'
+  import CommentSection from '../components/CommentSection.svelte'
   import { addRecentArticle } from '../utils/storage'
   import { tree } from '../stores/tree'
 
@@ -12,6 +13,7 @@
   let error = null
   let lockInfo = null
   let showVersionPanel = false
+  let commentCount = 0
 
   onMount(() => {
     loadArticle()
@@ -93,7 +95,7 @@
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
             </svg>
-            {article.comments}
+            {commentCount > 0 ? commentCount : article.comments}
           </span>
         </div>
       </div>
@@ -124,6 +126,13 @@
 
     <div class="article-content">
       <MarkdownPreview content={article.content} />
+    </div>
+
+    <div style="padding: 0 40px 40px;">
+      <CommentSection
+        articleId={params.id}
+        on:countChange={(e) => commentCount = e.detail}
+      />
     </div>
   {/if}
 </div>

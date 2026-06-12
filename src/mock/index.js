@@ -301,6 +301,69 @@ export const mockVersions = {
   ]
 }
 
+export const mockComments = {
+  'article-1': [
+    {
+      id: 'cmt-1',
+      articleId: 'article-1',
+      author: { id: 'user-2', name: '李四' },
+      content: '这次技术分享质量很高，建议把代码示例也同步到 Git 仓库方便大家参考。',
+      createdAt: '2024-01-08T13:00:00Z',
+      likes: 5,
+      replies: [
+        {
+          id: 'cmt-1-r1',
+          parentId: 'cmt-1',
+          author: { id: 'user-1', name: '张三' },
+          content: '好的，我整理完就发群里。',
+          createdAt: '2024-01-08T14:20:00Z',
+          likes: 2,
+          replies: []
+        }
+      ]
+    },
+    {
+      id: 'cmt-2',
+      articleId: 'article-1',
+      author: { id: 'user-3', name: '王五' },
+      content: 'Vue 3 组合式 API 那部分讲得很清楚，我有个问题：setup script 里如何优雅地处理大量的 props 解构？',
+      createdAt: '2024-01-09T09:15:00Z',
+      likes: 3,
+      replies: []
+    },
+    {
+      id: 'cmt-3',
+      articleId: 'article-1',
+      author: { id: 'user-6', name: '产品孙七' },
+      content: '文档结构很清晰，希望以后周会纪要都按这个格式来。',
+      createdAt: '2024-01-10T11:30:00Z',
+      likes: 8,
+      replies: []
+    }
+  ],
+  'article-3': [
+    {
+      id: 'cmt-a3-1',
+      articleId: 'article-3',
+      author: { id: 'user-4', name: '赵六' },
+      content: '退款超时时间配置文档里好像没写清楚，默认是多少秒？',
+      createdAt: '2024-02-01T10:00:00Z',
+      likes: 2,
+      replies: [
+        {
+          id: 'cmt-a3-1-r1',
+          parentId: 'cmt-a3-1',
+          author: { id: 'user-2', name: '李四' },
+          content: '默认 30 秒，可在 refund_timeout_ms 配置项里改。',
+          createdAt: '2024-02-01T10:30:00Z',
+          likes: 1,
+          replies: []
+        }
+      ]
+    }
+  ]
+}
+
 export const mockCurrentUser = {
   id: 'user-1',
   name: '张三',

@@ -4,6 +4,7 @@
   import MarkdownEditor from '../components/MarkdownEditor.svelte'
   import MarkdownPreview from '../components/MarkdownPreview.svelte'
   import { saveDraft, deleteDraft, startAutoSave, stopAutoSave, getDraft } from '../utils/storage'
+  import { articleApi } from '../api/article'
 
   export let params = {}
 
@@ -16,6 +17,7 @@
   let isLocked = false
   let lockUser = null
   let autoSaveTimer = null
+  let lockRenewTimer = null
   let lastSaved = null
   let splitRatio = 50
   let isResizing = false
@@ -24,16 +26,22 @@
     loadArticle()
   })
 
-  onDestroy(() => {
+  onDestroy(async () => {
     stopAutoSave(autoSaveTimer)
-    if (lockInfo) {
+    if (lockRenewTimer) clearInterval(lockRenewTimer)
+    if (lockInfo && lockInfo.locked) {
+      try {
+        await articleApi.releaseLock(params.id)
+      } catch (e) {
+        console.warn('释放编辑锁失败:', e)
+      }
     }
   })
 
-  function loadArticle() {
+  async function loadArticle() {
     loading = true
 
-    setTimeout(() => {
+    try {
       article = mockArticles[params.id]
       if (article) {
         const draft = getDraft(params.id)
@@ -46,10 +54,28 @@
           title = article.title
         }
 
-        lockInfo = {
-          locked: false,
-          user: null,
-          expiresAt: Date.now() + 5 * 60 * 1000
+        try {
+          const lockData = await articleApi.acquireLock(params.id)
+          lockInfo = {
+            locked: true,
+            user: lockData.user || mockCurrentUser,
+            expiresAt: Date.now() + 5 * 60 * 1000
+          }
+
+          lockRenewTimer = setInterval(async () => {
+            if (lockInfo && lockInfo.locked) {
+              try {
+                await articleApi.renewLock(params.id)
+                lockInfo.expiresAt = Date.now() + 5 * 60 * 1000
+              } catch (e) {
+                console.warn('续期编辑锁失败:', e)
+              }
+            }
+          }, 4 * 60 * 1000)
+        } catch (lockErr) {
+          const currentLock = await articleApi.getArticleLock(params.id)
+          isLocked = true
+          lockUser = currentLock.user
         }
 
         autoSaveTimer = startAutoSave(params.id, () => ({
@@ -57,8 +83,11 @@
           content
         }))
       }
-      loading = false
-    }, 200)
+    } catch (e) {
+      console.error('加载文章失败:', e)
+    }
+
+    loading = false
   }
 
   function handleContentChange(e) {
@@ -72,19 +101,33 @@
   async function handleSave() {
     saving = true
 
-    setTimeout(() => {
-      saving = false
+    try {
+      await new Promise(r => setTimeout(r, 500))
+
       deleteDraft(params.id)
       lastSaved = Date.now()
-
-      if (lockInfo) {
-        lockInfo.expiresAt = Date.now() + 5 * 60 * 1000
-      }
-    }, 500)
+    } finally {
+      saving = false
+      await releaseCurrentLock()
+      window.location.hash = `#/article/${params.id}`
+    }
   }
 
-  function handleCancel() {
+  async function handleCancel() {
+    await releaseCurrentLock()
     window.location.hash = `#/article/${params.id}`
+  }
+
+  async function releaseCurrentLock() {
+    if (lockInfo && lockInfo.locked) {
+      try {
+        await articleApi.releaseLock(params.id)
+      } catch (e) {
+        console.warn('释放编辑锁失败:', e)
+      } finally {
+        lockInfo = null
+      }
+    }
   }
 
   function startResize(e) {
