@@ -1,0 +1,37 @@
+{
+  "name": "kb-frontend",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@codemirror/lang-javascript": "6.x",
+    "@codemirror/lang-python": "6.x",
+    "@codemirror/lang-java": "6.x",
+    "@codemirror/lang-sql": "6.x",
+    "@codemirror/state": "6.x",
+    "@codemirror/view": "6.x",
+    "@codemirror/commands": "6.x",
+    "@codemirror/search": "6.x",
+    "@codemirror/autocomplete": "6.x",
+    "@codemirror/language": "6.x",
+    "codemirror": "6.x",
+    "svelte": "4.x",
+    "svelte-spa-router": "4.x",
+    "marked": "12.x",
+    "dompurify": "3.x",
+    "mermaid": "10.x",
+    "katex": "0.16.x",
+    "highlight.js": "11.x",
+    "diff": "5.x",
+    "idb": "8.x"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^3.1.1",
+    "vite": "^5.2.11"
+  }
+}
